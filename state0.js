@@ -1,33 +1,54 @@
-var demo = {},centerX=1500/2,centerY=1000/2,char,speed=6;
+var demo = {},centerX=1500/2,centerY=1000/2,char,speed=11;
 demo.state0 = function(){};
 demo.state0.prototype = {
   preload:function(){
-    game.load.image('char','assets/char/char.png',32,32);
-    game.load.spritesheet('orc','assets/badGuysPNG/Orc/orc_regular_bald.png',32,32);
+    game.load.spritesheet('char','assets/spritesheets/charSheet.png',160,160);
+    game.load.image('grave','assets/backgrounds/graveyard.png');
 
   },
   create:function(){
+
+    game.physics.startSystem(Phaser.Physics.ARCADE);
     game.stage.backgroundColor = "#D0DFD0";
     console.log('state0');
     addChangeStateEventListeners();
+    game.world.setBounds(0,0,3236,1000);
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    char=game.add.sprite(centerX,centerY,'char');
-    orc=game.add.sprite(10,1000,'orc');
-    char.anchor.setTo(0.5,0.5);
-    orc.anchor.setTo(0.2,0.2)
+    var graveBG = game.add.sprite(0,0,'grave');
+    char=game.add.sprite(centerX,900,'char');
+    char.anchor.setTo(0.5,0.8);
+    char.scale.setTo(0.8,0.8);
+    game.physics.enable(char);
+    char.body.collideWorldBounds= true;
+    char.animations.add('walk',[0,1,2,3,4,5,6,7]);
 
+
+
+    game.camera.follow(char);
+    game.camera.deadzone = new Phaser.Rectangle(centerX - 300, 0,600,1000);
 
   },
   update:function(){
     if(game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
+      char.scale.setTo(0.8,0.8);
+      char.animations.play('walk',15,true);
       char.x += speed;
     }
     else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
+      char.scale.setTo(-0.8,0.8);
+      char.animations.play('walk',15,true);
       char.x -= speed;
 
     }
+    else{
+      char.animations.stop('walk');
+      char.frame = 0;
+    }
     if(game.input.keyboard.isDown(Phaser.Keyboard.UP)){
       char.y -= speed;
+      if(char.y < 802){
+        char.y = 802;
+      }
     }
     else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
       char.y += speed;
